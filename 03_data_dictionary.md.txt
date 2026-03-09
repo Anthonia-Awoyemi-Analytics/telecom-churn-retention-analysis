@@ -1,0 +1,19 @@
+# Data Dictionary (Telco Churn → EdTech Mapping)
+
+## Source dataset
+Telco Customer Churn (Kaggle)
+
+## Key fields used
+- customerID: unique user id
+- tenure: months active (proxy for subscription length)
+- MonthlyCharges: monthly subscription price (proxy)
+- TotalCharges: total paid to date (may need cleaning)
+- Contract: plan type (Month-to-month, One year, Two year)
+- PaymentMethod: payment behavior
+- Churn: target (Yes/No)
+
+## EdTech mapping (story framing)
+- InternetService/PhoneService → access channel (optional)
+- Contract → subscription plan
+- MonthlyCharges → subscription fee
+- tenure → months subscribed

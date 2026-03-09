@@ -1,0 +1,38 @@
+# Project Charter — EdTech Scholarship Retention
+
+## Business context
+A subscription-based EdTech platform launched a 50% scholarship campaign for the first 3 months to boost signups.
+
+## Problem statement
+Leadership observed strong signup growth during the campaign but suspects churn increased after the discount ended.
+
+## Objectives
+1) Measure whether the campaign cohort churns more than non-campaign cohorts.
+2) Estimate LTV differences (discount vs non-discount).
+3) Identify segments with high retention and high LTV.
+4) Recommend whether to continue, modify, or stop the campaign.
+
+## Stakeholders
+- CEO (growth + sustainability)
+- Head of Marketing (campaign performance)
+- Finance (MRR stability, LTV)
+
+## Scope
+Included:
+- Retention/churn analysis
+- Cohorts (pre/during/post campaign)
+- LTV estimates
+
+Excluded (for now):
+- Causal inference (A/B test not available)
+- Full ML churn prediction (optional later)
+
+## Success criteria
+- Clear cohort comparisons
+- Transparent definitions + assumptions
+- Actionable recommendations tied to metrics
+
+## Data Constraints Identified
+- No explicit signup_date or cancellation_date available.
+- Dataset represents a snapshot in time.
+- Tenure field will be used as a proxy for subscription duration.
