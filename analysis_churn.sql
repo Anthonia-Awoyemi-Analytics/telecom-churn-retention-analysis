@@ -99,4 +99,5 @@ SELECT
     / SUM(CASE WHEN churn = 'Yes' THEN 1 ELSE 0 END) * 100,
     2
   ) AS month_to_month_share_of_churn_percent
+
 FROM customer_churn_clean;
