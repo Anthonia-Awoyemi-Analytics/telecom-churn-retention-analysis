@@ -1,6 +1,6 @@
-                                          **Revenue Risk \& Retention Strategy Analysis**
+                         **Revenue Risk \& Retention Strategy Analysis**
 
-                                             **Subscription-Based Telecom Business**
+                             **Subscription-Based Telecom Business**
  
 
 
@@ -18,6 +18,8 @@ The bigger concern, however, was financial. When I compared revenue metrics, I f
 
 
 This reframes churn from a general metric into a focused revenue-risk issue. Based on the findings, retention efforts should prioritize early stage month to month customers through stronger onboarding and incentives to transition into longer term contracts.
+
+![Telecom Churn Dashboard](dashboard_overview.png) 
 
 
 
@@ -198,4 +200,5 @@ SQL (aggregation, CTEs, conditional logic, segmentation)
 DBeaver
 
 GitHub (version control \& project documentation)
+
 
