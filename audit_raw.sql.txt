@@ -1,0 +1,42 @@
+02_audit_raw.sql
+Purpose:
+Pre cleaning audit of the raw customer table.
+Why:
+Data integrity should be verified before any transformation or analysis.
+Assumes:
+Raw table is named customer_churn_raw.
+
+A) Row integrity
+   Confirm that the import loaded all expected rows
+   SELECT COUNT(*) AS raw_row_count
+   FROM customer_churn_raw;
+
+B) Uniqueness
+   Confirm that each row represents a unique customer
+   Note: if the raw column name is capitalized, use quotes exactly as stored
+   SELECT
+    COUNT(*) AS total_rows,
+    COUNT(DISTINCT "CustomerID") AS distinct_customers
+    FROM customer_churn_raw;
+
+C) Missing / blank audit for key fields
+   TRIM is used because blanks may contain spaces rather than true empty strings
+   SELECT
+    SUM(CASE WHEN "TotalCharges" IS NULL OR TRIM("TotalCharges") = '' THEN 1 ELSE 0 END) AS totalcharges_blank,
+    SUM(CASE WHEN "tenure" IS NULL OR TRIM("tenure") = '' THEN 1 ELSE 0 END) AS tenure_blank,
+    SUM(CASE WHEN "MonthlyCharges" IS NULL OR TRIM("MonthlyCharges") = '' THEN 1 ELSE 0 END) AS monthlycharges_blank,
+    SUM(CASE WHEN "Churn" IS NULL OR TRIM("Churn") = '' THEN 1 ELSE 0 END) AS churn_blank
+    FROM customer_churn_raw;
+
+D) Consistency check for blank TotalCharges
+   Confirm whether blank TotalCharges values occur only when tenure = 0, or whether they indicate a data inconsistency
+   SELECT
+  "tenure",
+  "TotalCharges"
+   FROM customer_churn_raw
+   WHERE TRIM("TotalCharges") = '';
+
+E) Inspect raw churn values helps confirm whether categorical values are clean before transformation
+   SELECT DISTINCT "Churn"
+   FROM customer_churn_raw
+   ORDER BY "Churn";

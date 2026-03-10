@@ -1,0 +1,48 @@
+04_validation.sql
+Purpose:
+Validate that the cleaned table was created correctly and is ready for analysis.
+Why:
+Validation checks confirm that row counts, null handling, category values, and numeric ranges remain consistent after transformation.
+
+A) Compare raw and clean row counts
+SELECT 'customer_churn_raw' AS table_name, COUNT(*) AS row_count
+ FROM customer_churn_raw
+ UNION ALL
+ SELECT 'customer_churn_clean', COUNT(*)
+ FROM customer_churn_clean;
+
+B) Null checks and tenure range validation
+SELECT
+  SUM(CASE WHEN total_charges IS NULL THEN 1 ELSE 0 END) AS total_charges_nulls,
+  SUM(CASE WHEN monthly_charges IS NULL THEN 1 ELSE 0 END) AS monthly_charges_nulls,
+  SUM(CASE WHEN churn IS NULL OR TRIM(churn) = '' THEN 1 ELSE 0 END) AS churn_nulls_or_blanks,
+  MIN(tenure_months) AS min_tenure,
+  MAX(tenure_months) AS max_tenure
+FROM customer_churn_clean;
+
+C) Churn value distribution
+   Confirms that churn categories are present and clean
+ SELECT
+  churn,
+  COUNT(*) AS customers
+  FROM customer_churn_clean
+  GROUP BY churn
+  ORDER BY customers DESC;
+
+D) Contract value distribution
+   Confirms that contract categories are present and clean
+  SELECT
+    contract,
+    COUNT(*) AS customers
+    FROM customer_churn_clean
+    GROUP BY contract
+    ORDER BY customers DESC;
+
+E) Charge range checks
+   Confirms that monthly and total charges fall within realistic bounds
+SELECT
+  MIN(monthly_charges) AS min_monthly,
+  MAX(monthly_charges) AS max_monthly,
+  MIN(total_charges) AS min_total,
+  MAX(total_charges) AS max_total
+FROM customer_churn_clean;

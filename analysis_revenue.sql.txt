@@ -1,0 +1,38 @@
+06_analysis_revenue.sql
+Purpose:
+Revenue-focused analysis for the cleaned telecom customer dataset.
+This file compares revenue characteristics of churned and retained customers, then estimates the financial upside of a retention improvement scenario.
+
+Source table:
+customer_churn_clean
+
+A) Revenue comparison by churn status compares customer counts, average monthly charges, and average total charges between churned and retained customers
+SELECT
+  churn,
+  COUNT(*) AS total_customers,
+  ROUND(AVG(monthly_charges), 2) AS avg_monthly_charges,
+  ROUND(AVG(total_charges), 2) AS avg_total_charges
+FROM customer_churn_clean
+GROUP BY churn;
+
+B) Month to month revenue comparison
+   Compares average monthly charges for churners vs retained customers within the highest risk contract segment
+SELECT
+  contract,
+  churn,
+  ROUND(AVG(monthly_charges), 2) AS avg_monthly_charges
+FROM customer_churn_clean
+WHERE contract = 'Month-to-month'
+GROUP BY contract, churn;
+
+C) Retention improvement scenario
+   Models the estimated monthly and annual revenue protected, if Month to month churn is reduced by 10%
+SELECT
+  COUNT(*) AS churned_customers,
+  ROUND(AVG(monthly_charges), 2) AS avg_monthly_charge,
+  ROUND(COUNT(*) * 0.10, 0) AS customers_saved_10pct,
+  ROUND(COUNT(*) * 0.10 * AVG(monthly_charges), 2) AS monthly_revenue_protected,
+  ROUND(COUNT(*) * 0.10 * AVG(monthly_charges) * 12, 2) AS annual_revenue_protected
+FROM customer_churn_clean
+WHERE contract = 'Month-to-month'
+  AND churn = 'Yes';

@@ -1,0 +1,102 @@
+05_analysis_churn.sql
+Purpose:
+Core churn analysis for the cleaned telecom customer dataset.
+This file covers:
+1. Overall churn KPI
+2. Churn by contract type
+3. Churn by tenure bands
+4. Cross segmentation by contract and tenure
+5. Month to month churn concentration
+
+Source table:
+customer_churn_clean
+
+A) Overall churn KPI
+SELECT
+  COUNT(*) AS total_customers,
+  SUM(CASE WHEN churn = 'Yes' THEN 1 ELSE 0 END) AS churned_customers,
+  ROUND(
+    SUM(CASE WHEN churn = 'Yes' THEN 1 ELSE 0 END)::numeric / COUNT(*) * 100,
+    2
+  ) AS churn_rate_percent
+FROM customer_churn_clean;
+
+B) Churn by contract type
+SELECT
+  contract,
+  COUNT(*) AS total_customers,
+  SUM(CASE WHEN churn = 'Yes' THEN 1 ELSE 0 END) AS churned_customers,
+  ROUND(
+    SUM(CASE WHEN churn = 'Yes' THEN 1 ELSE 0 END)::numeric / COUNT(*) * 100,
+    2
+  ) AS churn_rate_percent
+FROM customer_churn_clean
+GROUP BY contract
+ORDER BY churn_rate_percent DESC;
+
+C) Churn by tenure bands
+   Buckets customers into lifecycle stages using CASE logic
+   SELECT
+    CASE
+    WHEN tenure_months BETWEEN 0 AND 6 THEN '0-6 months'
+    WHEN tenure_months BETWEEN 7 AND 12 THEN '7-12 months'
+    WHEN tenure_months BETWEEN 13 AND 24 THEN '13-24 months'
+    WHEN tenure_months BETWEEN 25 AND 48 THEN '25-48 months'
+    ELSE '49+ months'
+  END AS tenure_group,
+  COUNT(*) AS total_customers,
+  SUM(CASE WHEN churn = 'Yes' THEN 1 ELSE 0 END) AS churned_customers,
+  ROUND(
+    SUM(CASE WHEN churn = 'Yes' THEN 1 ELSE 0 END)::numeric / COUNT(*) * 100,
+    2
+  ) AS churn_rate_percent
+FROM customer_churn_clean
+GROUP BY tenure_group
+ORDER BY
+  CASE
+    WHEN tenure_group = '0-6 months' THEN 1
+    WHEN tenure_group = '7-12 months' THEN 2
+    WHEN tenure_group = '13-24 months' THEN 3
+    WHEN tenure_group = '25-48 months' THEN 4
+    ELSE 5
+  END;
+
+D) Contract × tenure cross segmentation
+   Identifies where churn is concentrated across contract type and lifecycle stage
+   SELECT
+   contract,
+   CASE
+    WHEN tenure_months BETWEEN 0 AND 6 THEN '0-6 months'
+    WHEN tenure_months BETWEEN 7 AND 12 THEN '7-12 months'
+    WHEN tenure_months BETWEEN 13 AND 24 THEN '13-24 months'
+    WHEN tenure_months BETWEEN 25 AND 48 THEN '25-48 months'
+    ELSE '49+ months'
+  END AS tenure_group,
+  COUNT(*) AS total_customers,
+  SUM(CASE WHEN churn = 'Yes' THEN 1 ELSE 0 END) AS churned_customers,
+  ROUND(
+    SUM(CASE WHEN churn = 'Yes' THEN 1 ELSE 0 END)::numeric / COUNT(*) * 100,
+    2
+  ) AS churn_rate_percent
+FROM customer_churn_clean
+GROUP BY contract, tenure_group
+ORDER BY
+  contract,
+  CASE
+    WHEN tenure_group = '0-6 months' THEN 1
+    WHEN tenure_group = '7-12 months' THEN 2
+    WHEN tenure_group = '13-24 months' THEN 3
+    WHEN tenure_group = '25-48 months' THEN 4
+    ELSE 5
+  END;
+
+E) Month to month churn concentration
+SELECT
+  SUM(CASE WHEN churn = 'Yes' AND contract = 'Month-to-month' THEN 1 ELSE 0 END) AS month_to_month_churned,
+  SUM(CASE WHEN churn = 'Yes' THEN 1 ELSE 0 END) AS total_churned,
+  ROUND(
+    SUM(CASE WHEN churn = 'Yes' AND contract = 'Month-to-month' THEN 1 ELSE 0 END)::numeric
+    / SUM(CASE WHEN churn = 'Yes' THEN 1 ELSE 0 END) * 100,
+    2
+  ) AS month_to_month_share_of_churn_percent
+FROM customer_churn_clean;
